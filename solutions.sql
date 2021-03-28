@@ -1,4 +1,5 @@
--- JOINS SECTION -- 
+-- use this repo and postgres.devmountain.com to practice more queries! --
+-- JOINS -- 
 SELECT * FROM invoice_line
 WHERE unit_price > 0.99;
 
@@ -35,8 +36,114 @@ JOIN playlist_track pt ON pt.track_id = t.track_id
 JOIN playlist p ON p.playlist_id = pt.playlist_id
 WHERE p.name = 'Music';
 
+-- NESTED QUERIES --
+
+SELECT * FROM invoice_line
+WHERE unit_price > 0.99;
+
+SELECT * FROM playlist_track
+WHERE playlist_id IN ( SELECT playlist_id FROM playlist 
+WHERE name ILIKE 'MUSIC');
+
+SELECT name FROM track
+WHERE track_id IN ( SELECT track_id FROM playlist_track 
+WHERE playlist_id = 5); 
+
+SELECT * FROM track
+WHERE genre_id IN (SELECT genre_id FROM genre
+WHERE name = 'Comedy');
+
+SELECT * FROM track 
+WHERE album_id IN (SELECT album_id
+FROM album 
+WHERE title = 'Fireball');
+
+SELECT * FROM track 
+WHERE album_id IN ( SELECT album_id FROM album WHERE artist_id IN (
+SELECT artist_id FROM artist WHERE name = 'Queen') 
+);
 
 
+-- UPDATING ROWS --
+
+UPDATE customer
+SET fax = null
+WHERE fax IS NOT null;
+
+UPDATE customer
+SET company = 'Self'
+WHERE company IS null;
+
+UPDATE customer
+SET last_name = 'Thompson'
+WHERE first_name = 'Julia' AND last_name = 'Barnett';
+
+UPDATE customer
+SET support_rep_id = 4
+WHERE email = 'luisrojas@yahoo.cl';
+
+UPDATE track
+SET composer = 'The darkness around us'
+WHERE genre_id = (SELECT genre_id FROM genre WHERE name = 'Metal')
+AND composer IS null;
+
+-- GROUP BY --
+
+
+SELECT COUNT(*), g.name
+FROM track t
+JOIN genre g ON t.genre_id = g.genre_id
+GROUP BY g.name;
+
+SELECT COUNT(*), g.name
+FROM track t
+JOIN genre g ON g.genre_id = t.genre_id
+WHERE g.name = 'Pop' OR g.name = 'Rock'
+GROUP BY g.name;
+
+SELECT ar.name, COUNT(*)
+FROM album al
+JOIN artist ar ON ar.artist_id = al.artist_id
+GROUP BY ar.name;
+
+-- USE DISTINCT --
+
+SELECT DISTINCT composer
+FROM track;
+
+SELECT DISTINCT billing_postal_code
+FROM invoice;
+
+SELECT DISTINCT company
+FROM customer;
+
+--DELETE ROWS --
+
+CREATE TABLE practice_delete ( name TEXT, type TEXT, value INTEGER );
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'bronze', 50);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'bronze', 50);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'bronze', 50);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'silver', 100);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'silver', 100);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'gold', 150);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'gold', 150);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'gold', 150);
+INSERT INTO practice_delete ( name, type, value ) VALUES ('delete', 'gold', 150);
+
+SELECT * FROM practice_delete;
+
+
+DELETE 
+FROM practice_delete 
+WHERE type = 'bronze';
+
+DELETE 
+FROM practice_delete 
+WHERE type = 'silver';
+
+DELETE 
+FROM practice_delete 
+WHERE value = 150;
 
 -- e commerce no hints section --
 CREATE TABLE users (
